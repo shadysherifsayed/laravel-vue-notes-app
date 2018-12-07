@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="!loading">
 
         <div v-if="notes">
             <note v-for="note in notes" :key="note.id" :note="note"></note>
@@ -42,6 +42,7 @@
 
         data() {
             return {
+                loading: true,
                 data: null,
                 notes: null,
                 meta: null,
@@ -52,6 +53,7 @@
             }
         },
 
+
         created() {
             this.getNotes();
         },
@@ -60,8 +62,8 @@
             getNotes(page = 1) {
                 this.$store.dispatch('getNotes', page)
                     .then(() => {
-
                         this.data = this.$store.getters.getNotes;
+                        this.loading = false;
                         if(!this.data || this.data.data.length === 0) return;
                         this.notes =  this.data.data;
                         this.meta = this.data.meta;

@@ -50632,6 +50632,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
     data: function data() {
         return {
+            loading: true,
             data: null,
             notes: null,
             meta: null,
@@ -50653,8 +50654,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var page = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 1;
 
             this.$store.dispatch('getNotes', page).then(function () {
-
                 _this.data = _this.$store.getters.getNotes;
+                _this.loading = false;
                 if (!_this.data || _this.data.data.length === 0) return;
                 _this.notes = _this.data.data;
                 _this.meta = _this.data.meta;
@@ -50786,9 +50787,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         note: Object
     },
 
+    data: function data() {
+        return {
+            deleted: false
+        };
+    },
+
     methods: {
         deleteNote: function deleteNote() {
-            this.$store.dispatch('removeNote', this.note);
+            var _this = this;
+
+            this.$store.dispatch('removeNote', this.note).then(function () {
+                _this.deleted = true;
+            });
         }
     }
 });
@@ -50801,42 +50812,44 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "note", attrs: { id: _vm.note.id } }, [
-    _c("div", { staticClass: "note-title" }, [
-      _c("h4", [_vm._v(" " + _vm._s(_vm.note.title) + " ")]),
-      _vm._v(" "),
-      _c("small", [_vm._v(" " + _vm._s(_vm.note.created_at) + " ")])
-    ]),
-    _vm._v(" "),
-    _c("div", {
-      staticClass: "note-description",
-      domProps: { innerHTML: _vm._s(_vm.note.description) }
-    }),
-    _vm._v(" "),
-    _c(
-      "div",
-      { staticClass: "note-actions" },
-      [
-        _c(
-          "router-link",
-          {
-            staticClass: "btn edit",
-            attrs: {
-              to: { name: "notes.edit", params: { note: _vm.note.slug } }
-            }
-          },
-          [_vm._v(" Edit ")]
-        ),
+  return !_vm.deleted
+    ? _c("div", { staticClass: "note", attrs: { id: _vm.note.id } }, [
+        _c("div", { staticClass: "note-title" }, [
+          _c("h4", [_vm._v(" " + _vm._s(_vm.note.title) + " ")]),
+          _vm._v(" "),
+          _c("small", [_vm._v(" " + _vm._s(_vm.note.created_at) + " ")])
+        ]),
+        _vm._v(" "),
+        _c("div", {
+          staticClass: "note-description",
+          domProps: { innerHTML: _vm._s(_vm.note.description) }
+        }),
         _vm._v(" "),
         _c(
-          "button",
-          { staticClass: "btn delete", on: { click: _vm.deleteNote } },
-          [_vm._v(" Delete ")]
+          "div",
+          { staticClass: "note-actions" },
+          [
+            _c(
+              "router-link",
+              {
+                staticClass: "btn edit",
+                attrs: {
+                  to: { name: "notes.edit", params: { note: _vm.note.slug } }
+                }
+              },
+              [_vm._v(" Edit ")]
+            ),
+            _vm._v(" "),
+            _c(
+              "button",
+              { staticClass: "btn delete", on: { click: _vm.deleteNote } },
+              [_vm._v(" Delete ")]
+            )
+          ],
+          1
         )
-      ],
-      1
-    )
-  ])
+      ])
+    : _vm._e()
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -50856,83 +50869,85 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [
-    _vm.notes
-      ? _c(
-          "div",
-          [
-            _vm._l(_vm.notes, function(note) {
-              return _c("note", { key: note.id, attrs: { note: note } })
-            }),
-            _vm._v(" "),
-            _c("nav", [
-              _c(
-                "ul",
-                { staticClass: "pagination justify-content-end" },
-                [
-                  _vm.prevPage
-                    ? _c(
-                        "li",
-                        {
-                          staticClass: "page-item",
-                          on: {
-                            click: function($event) {
-                              _vm.getNotes(_vm.prevPage)
+  return !_vm.loading
+    ? _c("div", [
+        _vm.notes
+          ? _c(
+              "div",
+              [
+                _vm._l(_vm.notes, function(note) {
+                  return _c("note", { key: note.id, attrs: { note: note } })
+                }),
+                _vm._v(" "),
+                _c("nav", [
+                  _c(
+                    "ul",
+                    { staticClass: "pagination justify-content-end" },
+                    [
+                      _vm.prevPage
+                        ? _c(
+                            "li",
+                            {
+                              staticClass: "page-item",
+                              on: {
+                                click: function($event) {
+                                  _vm.getNotes(_vm.prevPage)
+                                }
+                              }
+                            },
+                            [_vm._m(0)]
+                          )
+                        : _vm._e(),
+                      _vm._v(" "),
+                      _vm._l(_vm.pages, function(page) {
+                        return _c(
+                          "li",
+                          {
+                            key: page,
+                            staticClass: "page-item",
+                            class: page == _vm.currentPage ? "active" : "",
+                            on: {
+                              click: function($event) {
+                                _vm.getNotes(page)
+                              }
                             }
-                          }
-                        },
-                        [_vm._m(0)]
-                      )
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm._l(_vm.pages, function(page) {
-                    return _c(
-                      "li",
-                      {
-                        key: page,
-                        staticClass: "page-item",
-                        class: page == _vm.currentPage ? "active" : "",
-                        on: {
-                          click: function($event) {
-                            _vm.getNotes(page)
-                          }
-                        }
-                      },
-                      [
-                        _c("button", { staticClass: "page-link" }, [
-                          _vm._v(_vm._s(page))
-                        ])
-                      ]
-                    )
-                  }),
-                  _vm._v(" "),
-                  _vm.nextPage
-                    ? _c(
-                        "li",
-                        {
-                          staticClass: "page-item",
-                          on: {
-                            click: function($event) {
-                              _vm.getNotes(_vm.nextPage)
-                            }
-                          }
-                        },
-                        [_vm._m(1)]
-                      )
-                    : _vm._e()
-                ],
-                2
-              )
+                          },
+                          [
+                            _c("button", { staticClass: "page-link" }, [
+                              _vm._v(_vm._s(page))
+                            ])
+                          ]
+                        )
+                      }),
+                      _vm._v(" "),
+                      _vm.nextPage
+                        ? _c(
+                            "li",
+                            {
+                              staticClass: "page-item",
+                              on: {
+                                click: function($event) {
+                                  _vm.getNotes(_vm.nextPage)
+                                }
+                              }
+                            },
+                            [_vm._m(1)]
+                          )
+                        : _vm._e()
+                    ],
+                    2
+                  )
+                ])
+              ],
+              2
+            )
+          : _c("div", [
+              _c("h3", { staticClass: "no-notes" }, [
+                _vm._v(" You have no notes yet.")
+              ])
             ])
-          ],
-          2
-        )
-      : _c("div", [
-          _c("h3", { staticClass: "no-notes" }, [
-            _vm._v(" You have no notes yet.")
-          ])
-        ])
-  ])
+      ])
+    : _vm._e()
 }
 var staticRenderFns = [
   function() {
@@ -53259,13 +53274,18 @@ var index_esm = {
             state.all = notes;
         },
         removeNote: function removeNote(state, removedNote) {
-            state.all = state.all.filter(function (note) {
+            console.log(removedNote);
+            console.log(state.all.data);
+
+            state.all.data = state.all.data.filter(function (note) {
                 return note.id !== removedNote.id;
             });
         },
+
         addNote: function addNote(state, note) {
-            state.all.push(note);
+            state.all.data.push(note);
         },
+
         updateNote: function updateNote(state, payload) {
             var oldNote = payload.oldNote,
                 updatedNote = payload.updatedNote;
@@ -53320,7 +53340,10 @@ var index_esm = {
                     context.commit("addNote", addedNote);
                     resolve();
                 }).catch(function (error) {
-                    reject(error.response.data);
+                    if (error && error.response) {
+                        reject(error.response.data);
+                    }
+                    reject();
                 });
             });
         },
@@ -53332,7 +53355,7 @@ var index_esm = {
 
 
             return new Promise(function (resolve, reject) {
-                axios.put("/api/notes/" + oldNote.slug, newNote).then(function (response) {
+                axios.patch("/api/notes/" + oldNote.slug, newNote).then(function (response) {
                     var updatedNote = response.data.data;
                     data = {
                         oldNote: oldNote,
@@ -53344,6 +53367,7 @@ var index_esm = {
                     if (error && error.response) {
                         reject(error.response.data);
                     }
+                    reject();
                 });
             });
         }

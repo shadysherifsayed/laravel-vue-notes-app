@@ -1,5 +1,5 @@
 <template>
-    <div class="note" :id="note.id">
+    <div v-if="!deleted"  class="note" :id="note.id">
         <div class="note-title">
             <h4> {{ note.title }} </h4>
             <small> {{ note.created_at }} </small>
@@ -19,9 +19,17 @@
             note: Object
         },
 
+        data() {
+            return {
+                deleted: false
+            }
+        },
         methods: {
             deleteNote() {
-                this.$store.dispatch('removeNote', this.note);
+                this.$store.dispatch('removeNote', this.note)
+                    .then(() => {
+                        this.deleted = true;
+                    })
             }
         },
     }

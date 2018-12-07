@@ -17,11 +17,17 @@ export default {
             state.all = notes;
         },
         removeNote: (state, removedNote) => {
-            state.all = state.all.filter(note => note.id !== removedNote.id);
+            console.log(removedNote);
+            console.log(state.all.data);
+
+
+            state.all.data = state.all.data.filter(note => note.id !== removedNote.id);
         },
+
         addNote: (state, note) => {
-            state.all.push(note);
+            state.all.data.push(note);
         },
+
         updateNote: (state, payload) => {
             const { oldNote, updatedNote } = payload;
             state.all.forEach((note, i) => {
@@ -83,7 +89,10 @@ export default {
                         resolve();
                     })
                     .catch(error => {
-                        reject(error.response.data);
+                        if (error && error.response) {
+                            reject(error.response.data);
+                        }
+                        reject();
                     });
             });
         },
@@ -96,7 +105,7 @@ export default {
 
             return new Promise((resolve, reject) => {
                 axios
-                    .put(`/api/notes/${oldNote.slug}`, newNote)
+                    .patch(`/api/notes/${oldNote.slug}`, newNote)
                     .then(response => {
                         let updatedNote = response.data.data;
                         data = {
@@ -110,6 +119,7 @@ export default {
                         if (error && error.response) {
                             reject(error.response.data);
                         }
+                        reject();
                     });
             });
         }
