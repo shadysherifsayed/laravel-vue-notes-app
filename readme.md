@@ -45,7 +45,7 @@ public function boot()
 ##### Error #2
 `SQLSTATE[42S01]: Base table or view already exists:`
 _**Solution**_
-Simply run the following command 
+Simply run the following commands
 ``` sh
 $ php artisan migrate:fresh
 $ php artisan passport:install
