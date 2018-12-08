@@ -48,5 +48,5 @@ _**Solution**_
 Simply run the following commands
 ``` sh
 $ php artisan migrate:fresh
-$ php artisan passport:install
+$ php artisan passport:install --force
 ```
